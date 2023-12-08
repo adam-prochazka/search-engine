@@ -1,4 +1,4 @@
-package cloudDatalake;
+package cloud;
 
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
