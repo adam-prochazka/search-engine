@@ -7,15 +7,17 @@ import com.google.cloud.storage.StorageOptions;
 import java.util.Map;
 
 public class CloudDatalake {
+    private String projectId;
     private String bucketName;
     private String objectName;
     private Map<Integer, String> bookNames;
     private BookPersistenceCloud persistence;
 
     public CloudDatalake(String projectId, String bucketName, String objectName) {
+        this.projectId = projectId;
         this.bucketName = bucketName;
         this.objectName = objectName;
-        initializeGoogleCloudStorage(projectId);
+        initializeGoogleCloudStorage();
         persistence = new BookPersistenceCloud(this.bucketName, this.objectName);
         bookNames = persistence.load();
     }
@@ -38,11 +40,11 @@ public class CloudDatalake {
     }
 
     public void saveToGoogleCloudStorage(String fileName, String content) {
-        SaveToGoogleCloudStorage saveToGoogleCloudStorage = new SaveToGoogleCloudStorage(bucketName);
+        SaveToGoogleCloudStorage saveToGoogleCloudStorage = new SaveToGoogleCloudStorage(projectId, bucketName);
         saveToGoogleCloudStorage.saveBook(fileName, content);
     }
 
-    private void initializeGoogleCloudStorage(String projectId) {
+    private void initializeGoogleCloudStorage() {
         Storage storage = StorageOptions.newBuilder().setProjectId(projectId).build().getService();
 
         Bucket bucket = storage.get(bucketName);
