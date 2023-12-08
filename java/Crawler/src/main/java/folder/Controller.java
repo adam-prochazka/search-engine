@@ -1,4 +1,7 @@
+package folder;
+
 import datalake.DataLake;
+import folder.Downloader;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;

@@ -1,8 +1,11 @@
+package folder;
+
 import datalake.DataLake;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import java.io.IOException;
 import java.util.Random;
+import books.*;
 
 public class Downloader {
     private DataLake dataLake;
