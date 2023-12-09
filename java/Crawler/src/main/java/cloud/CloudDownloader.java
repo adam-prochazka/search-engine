@@ -1,9 +1,8 @@
 package cloud;
 
-import books.*;
+import books.ContentManager;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
-
 import java.io.IOException;
 import java.util.Random;
 
@@ -48,8 +47,7 @@ public class CloudDownloader {
 
                 String bookContent = ContentManager.getBookContent(book);
 
-                cloudDatalake.addBook(Integer.parseInt(i), fileName);
-                MessageSender.sendMessage(fileName);
+                //MessageSender.sendMessage(fileName);
                 cloudDatalake.saveToGoogleCloudStorage(fileName, bookContent);
                 System.out.println("Book saved to Google Cloud Storage: " + fileName);
                 return true;

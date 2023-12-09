@@ -1,11 +1,10 @@
-import cloud.CloudController;
-import cloud.CloudDatalake;
+
+import cloud.*;
 import datalake.DataLake;
 import folder.Controller;
 
 public class Main {
     public static void main(String[] args) {
-        //startFileDataLake();
         startCrawlerToCloud();
     }
 
@@ -17,8 +16,8 @@ public class Main {
     }
 
     private static void startCrawlerToCloud(){
-        //CloudDatalake dataLake = new CloudDatalake();
-        //CloudController crawler = new CloudController(dataLake);
-        //crawler.start();
+        CloudDatalake cloudDatalake = new CloudDatalake();
+        CloudController cloudController = new CloudController(cloudDatalake);
+        cloudController.start();
     }
 }

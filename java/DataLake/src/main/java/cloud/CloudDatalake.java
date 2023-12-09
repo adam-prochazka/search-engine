@@ -1,55 +1,39 @@
 package cloud;
 
-import com.google.cloud.storage.Bucket;
-import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
-
-import java.util.Map;
+import com.google.auth.Credentials;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.storage.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 public class CloudDatalake {
-    private String projectId;
-    private String bucketName;
-    private String objectName;
-    private Map<Integer, String> bookNames;
-    private BookPersistenceCloud persistence;
 
-    public CloudDatalake(String projectId, String bucketName, String objectName) {
-        this.projectId = projectId;
-        this.bucketName = bucketName;
-        this.objectName = objectName;
-        initializeGoogleCloudStorage();
-        persistence = new BookPersistenceCloud(this.bucketName, this.objectName);
-        bookNames = persistence.load();
-    }
+    private Storage storage;
+    private Bucket bucket;
 
-    public void addBook(int bookIndex, String bookTitle) {
-        bookNames.put(bookIndex, bookTitle);
-        persistence.save(bookNames);
+    public CloudDatalake() {
+        try {
+            Credentials credentials = GoogleCredentials
+                    .fromStream(new FileInputStream("datalake/src/files/google-bucket-credentials.json"));
+
+            this.storage = StorageOptions.newBuilder().setCredentials(credentials)
+                    .setProjectId("search-engine-404311").build().getService();
+             this.bucket = storage.get("ulpgc-big-data-search-engine-bucket");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean isBookInDataLake(String i) {
-        return persistence.containsBook(i);
+        String fileName = "(" + i + ")" + ".txt";
+        Blob blob = storage.get(BlobId.of("ulpgc-big-data-search-engine-bucket", fileName));
+        return blob != null;
     }
 
-    public String getTitle(int bookIndex) {
-        return bookNames.get(bookIndex);
-    }
-
-    public String getCloudDataLakePath() {
-        return "gs://" + bucketName + "/" + objectName;
-    }
-
-    public void saveToGoogleCloudStorage(String fileName, String content) {
-        SaveToGoogleCloudStorage saveToGoogleCloudStorage = new SaveToGoogleCloudStorage(projectId, bucketName);
-        saveToGoogleCloudStorage.saveBook(fileName, content);
-    }
-
-    private void initializeGoogleCloudStorage() {
-        Storage storage = StorageOptions.newBuilder().setProjectId(projectId).build().getService();
-
-        Bucket bucket = storage.get(bucketName);
-        if (bucket == null) {
-            storage.create(Bucket.newBuilder(bucketName).build());
-        }
+    public void saveToGoogleCloudStorage(String fileName, String bookContent) {
+        byte[] bookContentBytes = bookContent.getBytes(StandardCharsets.UTF_8);
+        Blob blob = bucket.create(fileName, bookContentBytes);
+        System.out.println("Libro subido al Cloud Storage: " + blob.getName());
     }
 }

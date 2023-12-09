@@ -50,7 +50,7 @@ public class Downloader {
                 String bookContent = ContentManager.getBookContent(book);
 
                 dataLake.saveToFile(dataLake.getDataLakePath() + fileName, bookContent);
-                MessageSender.sendMessage(fileName);
+                //MessageSender.sendMessage(fileName);
                 System.out.println("Book saved: " + fileName);
                 return true;
             } else {
