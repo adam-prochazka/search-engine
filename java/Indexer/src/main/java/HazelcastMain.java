@@ -1,8 +1,8 @@
 import datalake.DataLake;
 
-public class Main {
+public class HazelcastMain {
     public static void main(String[] args) {
-        Indexer indexer = new Indexer(new DataLake());
+        HazelcastIndexer indexer = new HazelcastIndexer(new DataLake());
         indexer.indexAll();
     }
 }
