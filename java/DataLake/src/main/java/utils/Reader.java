@@ -1,4 +1,6 @@
-package datalake;
+package utils;
+
+import datalake.DataLake;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;

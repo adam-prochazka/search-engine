@@ -21,7 +21,7 @@ public class CloudController {
         try {
             executor.scheduleAtFixedRate(() -> {
                 cloudDownloader.run();
-            }, 0, 1, TimeUnit.MINUTES);
+            }, 0, 30, TimeUnit.SECONDS);
 
             Thread.currentThread().join();
         } catch (InterruptedException e) {

@@ -1,8 +1,7 @@
 package datalake;
 
-import datalake.Book;
-import datalake.DataLake;
-import datalake.Reader;
+import utils.Book;
+import utils.Reader;
 import org.junit.*;
 
 import static org.junit.Assert.*;

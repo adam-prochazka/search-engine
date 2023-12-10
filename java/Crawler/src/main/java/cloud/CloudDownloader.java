@@ -1,17 +1,22 @@
 package cloud;
 
-import books.*;
+import ctrl.*;
+import folder.Downloader;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Random;
 
 public class CloudDownloader {
     private CloudDatalake cloudDatalake;
+    public static Logger logger = LoggerFactory.getLogger(Downloader.class);
 
     public CloudDownloader(CloudDatalake cloudDatalake) {
         this.cloudDatalake = cloudDatalake;
+        System.setProperty("log4j.configurationFile", "log4j2.properties");
     }
 
     public void run() {
@@ -22,12 +27,12 @@ public class CloudDownloader {
             String bookUrl = "https://www.gutenberg.org/cache/epub/" + numStr + "/pg" + numStr + ".txt";
 
             if (cloudDatalake.isBookInDataLake(numStr)) {
-                System.out.println("Book is already downloaded.");
+                logger.info("Book is already downloaded.");
             } else {
                 if (downloadBook(bookUrl, numStr)) {
-                    System.out.println("Download completed.");
+                    logger.info("Download completed.");
                 } else {
-                    System.out.println("Book not found: " + bookUrl);
+                    logger.error("Book not found: " + bookUrl);
                 }
             }
         } catch (Exception e) {
@@ -37,7 +42,8 @@ public class CloudDownloader {
 
     private boolean downloadBook(String bookUrl, String i) {
         try {
-            Connection.Response response = Jsoup.connect(bookUrl).ignoreContentType(true).execute();
+            logger.info("Trying connection...");
+            Connection.Response response = Jsoup.connect(bookUrl).timeout(30000).ignoreContentType(true).execute();
             String book = response.parse().wholeText();
 
             if (book.length() > 0) {
@@ -48,15 +54,15 @@ public class CloudDownloader {
 
                 String bookContent = ContentManager.getBookContent(book);
 
-                cloudDatalake.addBook(Integer.parseInt(i), fileName);
                 MessageSender.sendMessage(fileName);
-                cloudDatalake.saveToGoogleCloudStorage(fileName, bookContent);
-                System.out.println("Book saved to Google Cloud Storage: " + fileName);
+                cloudDatalake.saveToCloud(fileName, bookContent);
+                logger.info("Book saved to Google Cloud Storage: " + fileName);
                 return true;
             } else {
                 return false;
             }
         } catch (IOException e) {
+            logger.error("Connection failed. Retrying...");
             e.printStackTrace();
             return false;
         }

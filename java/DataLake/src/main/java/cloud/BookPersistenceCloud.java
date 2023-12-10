@@ -6,6 +6,7 @@ import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -15,17 +16,16 @@ import java.util.Map;
 
 public class BookPersistenceCloud {
     private String bucketName;
-    private String objectName;
+    private Storage storage;
 
-    public BookPersistenceCloud(String bucketName, String objectName) {
+    public BookPersistenceCloud(String bucketName, Storage st) {
         this.bucketName = bucketName;
-        this.objectName = objectName;
+        this.storage = st;
     }
 
     public Map<Integer, String> load() {
         try {
-            Storage storage = StorageOptions.getDefaultInstance().getService();
-            Blob blob = storage.get(bucketName, objectName);
+            Blob blob = storage.get(bucketName, "books.json");
             if (blob != null) {
                 ObjectMapper objectMapper = new ObjectMapper();
                 return objectMapper.readValue(new InputStreamReader(Channels.newInputStream(blob.reader())), new TypeReference<Map<Integer, String>>() {});
@@ -36,35 +36,23 @@ public class BookPersistenceCloud {
         return new HashMap<>();
     }
 
-    public void save(Map<Integer, String> books) {
+    public void save(Map<Integer,String> books){
+        ObjectMapper objectMapper = new ObjectMapper();
         try {
-            Storage storage = StorageOptions.getDefaultInstance().getService();
-            Blob blob = storage.get(bucketName, objectName);
-            OutputStream outputStream = Channels.newOutputStream(blob.writer());
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.writeValue(outputStream, books);
-            outputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+            String json = objectMapper.writeValueAsString(books);
 
-    public boolean containsBook(String i) {
-        try {
-            Storage storage = StorageOptions.getDefaultInstance().getService();
-            Blob blob = storage.get(bucketName, objectName);
-            if (blob != null) {
-                ObjectMapper objectMapper = new ObjectMapper();
-                Map<Integer, String> bookMap = objectMapper.readValue(new InputStreamReader(Channels.newInputStream(blob.reader())), new TypeReference<Map<Integer, String>>() {});
-                for (String title : bookMap.values()) {
-                    if (title.contains("(" + i + ")")) {
-                        return true;
-                    }
-                }
+            Blob blob = storage.get(bucketName, "books.json");
+
+            if (blob == null) {
+                blob = storage.create(Blob.newBuilder(bucketName, "books.json").build());
             }
-        } catch (IOException e) {
+
+            OutputStream outputStream = Channels.newOutputStream(blob.writer());
+            outputStream.write(json.getBytes());
+            outputStream.close();
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        return false;
     }
 }

@@ -17,8 +17,8 @@ public class Main {
     }
 
     private static void startCrawlerToCloud(){
-        //CloudDatalake dataLake = new CloudDatalake();
-        //CloudController crawler = new CloudController(dataLake);
-        //crawler.start();
+        CloudDatalake dataLake = new CloudDatalake();
+        CloudController crawler = new CloudController(dataLake);
+        crawler.start();
     }
 }
