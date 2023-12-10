@@ -1,27 +1,26 @@
-import datalake.DataLake;
+package cloud;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class Controller {
+public class CloudController {
 
-    DataLake dataLake ;
-    Downloader downloader;
+    private CloudDatalake cloudDatalake;
+    private CloudDownloader cloudDownloader;
 
-    public Controller(DataLake dl){
-        this.dataLake = dl;
-        this.downloader = new Downloader(dataLake);
+    public CloudController(CloudDatalake cloudDatalake) {
+        this.cloudDatalake = cloudDatalake;
+        this.cloudDownloader = new CloudDownloader(cloudDatalake);
         this.start();
     }
 
-    public void start(){
-
+    public void start() {
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 
         try {
             executor.scheduleAtFixedRate(() -> {
-                downloader.run();
+                cloudDownloader.run();
             }, 0, 1, TimeUnit.MINUTES);
 
             Thread.currentThread().join();
@@ -30,13 +29,9 @@ public class Controller {
         } finally {
             executor.shutdown();
         }
-
     }
 
-    public DataLake getDataLake(){
-        return this.dataLake;
+    public CloudDatalake getCloudDatalake() {
+        return this.cloudDatalake;
     }
-
-
-
 }
