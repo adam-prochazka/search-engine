@@ -74,7 +74,7 @@ public class CloudDatalake {
 
     private void initializeCloudStorage() {
         try {
-            this.credentials = GoogleCredentials.fromStream(new FileInputStream("C:\\Users\\Carlos\\Documents\\PycharmProjects\\BD\\search-engine\\java\\DataLake\\src\\main\\resources\\credentials.json"));
+            this.credentials = GoogleCredentials.fromStream(new FileInputStream("DataLake/src/main/resources/credentials.json"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -96,3 +96,5 @@ public class CloudDatalake {
 
 
 }
+
+
