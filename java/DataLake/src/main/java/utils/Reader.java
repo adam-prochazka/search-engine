@@ -1,57 +1,26 @@
 package utils;
 
 import datalake.DataLake;
-
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static utils.Common.extractBookName;
+import static utils.Common.preprocessText;
 
-public class Reader implements BookReader {
-    private Set<String> stopwordsEng = new HashSet<>();
+
+public class Reader {
+    private Set<String> stopwordsEng;
     private DataLake datalake;
 
     public Reader(DataLake dlake) {
         this.datalake = dlake;
-        loadStopwords();
+        stopwordsEng = Common.loadStopwords();
     }
 
-    private void loadStopwords() {
-        try (FileInputStream stopwordStream = new FileInputStream("datalake/src/files/en-stopwords.txt");
-             InputStreamReader stopwordStreamReader = new InputStreamReader(stopwordStream, StandardCharsets.UTF_8);
-             BufferedReader stopwordBufferedReader = new BufferedReader(stopwordStreamReader)) {
 
-            String line;
-            while ((line = stopwordBufferedReader.readLine()) != null) {
-                stopwordsEng.add(line);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public List<String> preprocessText(String text) {
-        List<String> words = new ArrayList<>();
-
-        String[] tokens = text.replace('—', ' ').replace('.', ' ')
-                .replace('_', ' ').replace('=', ' ').replace('-', ' ')
-                .split("\\s+");
-
-        for (String token : tokens) {
-            String word = token.toLowerCase().replaceAll("[^a-zA-Z]", "");
-            if (word.matches(".*[a-zA-Z].*") && !stopwordsEng.contains(word) && !word.isEmpty()) {
-                words.add(word);
-            }
-        }
-
-        return words;
-    }
-
-    @Override
     public String getPathSeparator() {
         String currentOs = System.getProperty("os.name").toLowerCase();
         if (currentOs.contains("win")) {
@@ -61,7 +30,6 @@ public class Reader implements BookReader {
         }
     }
 
-    @Override
     public Book readBook(String path) {
         String fileName,bookName;
         List<String> words = new ArrayList<>();
@@ -78,24 +46,16 @@ public class Reader implements BookReader {
                 bookContent.append(line).append('\n');
             }
 
-            words = preprocessText(bookContent.toString());
+            words = preprocessText(bookContent.toString(),stopwordsEng);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        bookName = this.extractBookName(fileName);
+        bookName = extractBookName(fileName);
         Book book = new Book(bookName,words);
         datalake.addBook(book.getIndex(), book.getName());
 
         return book;
     }
 
-    public static String extractBookName(String fileName) {
-        String[] parts = fileName.split("\\)");
-        String extractedName = parts[1].replace("_", " ");
-        extractedName = extractedName.substring(0, extractedName.length() - 4);
-        extractedName = extractedName.substring(0, 1).toUpperCase() + extractedName.substring(1);
-
-        return extractedName;
-    }
 
 }

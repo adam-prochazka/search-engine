@@ -84,4 +84,15 @@ public class CloudDatalake {
         this.bucket = storage.get(this.bucketName);
     }
 
+
+    public String getBucketName() {
+        return bucketName;
+    }
+
+    public Storage getStorage() {
+        return storage;
+    }
+
+
+
 }

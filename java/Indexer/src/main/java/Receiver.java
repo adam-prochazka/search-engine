@@ -35,16 +35,12 @@ public class Receiver implements MessageListener {
                 String bookFilename = textMessage.getText();
 
                 DataLake dataLake = new DataLake();
-                new Indexer(dataLake).indexOne(dataLake.getDataLakePath()+bookFilename);
+                new FileSystemIndexer(dataLake).indexOne(dataLake.getDataLakePath()+bookFilename);
 
             }
 
         } catch (JMSException e) {
             e.printStackTrace();
         }
-    }
-
-    public static void main(String[] args) {
-        new Receiver();
     }
 }

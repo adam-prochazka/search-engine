@@ -21,7 +21,6 @@ public class CLI {
                 new QueryMethods().queryWord(command);
             }
         }
-
         scanner.close();
     }
 

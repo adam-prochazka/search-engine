@@ -5,6 +5,7 @@ import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
+import persistence.repository.CloudRepository;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -15,8 +16,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CloudListPersistance {
-    private final Storage storage = StorageOptions.getDefaultInstance().getService();
-    private final String bucketName = "carlosbucket";
+    private Storage storage;
+    private String bucketName;
+
+    public CloudListPersistance(){
+        this.storage = new CloudRepository().getStorage();
+        this.bucketName = new CloudRepository().getBucketName();
+    }
 
     public List<Integer> read(String word) {
         Blob blob = storage.get(BlobId.of(bucketName, word));

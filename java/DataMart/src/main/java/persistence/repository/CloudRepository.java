@@ -1,27 +1,45 @@
 package persistence.repository;
 
-import com.google.cloud.storage.BlobId;
-import com.google.cloud.storage.BucketInfo;
-import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
+import com.google.auth.Credentials;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.storage.*;
+
+import java.io.FileInputStream;
+import java.io.IOException;
 
 public class CloudRepository {
-    private final Storage storage = StorageOptions.getDefaultInstance().getService();
-    private final String bucketName = "carlosbucket";
-    private final String path = "InvertedIndexRepository";
+    private Storage storage;
+    private final String projectId;
+    private Credentials credentials;
+    private final String bucketName;
+    private Bucket bucket;
 
     public CloudRepository() {
-        createBucketIfNotExists();
+        this.projectId = "search-engine-bd";
+        this.bucketName = "cloud_datamart";
+        initializeCloudStorage();
     }
 
-    private void createBucketIfNotExists() {
-        if (storage.get(bucketName) == null) {
-            storage.create(BucketInfo.of(bucketName));
+    private void initializeCloudStorage() {
+        try {
+            this.credentials = GoogleCredentials.fromStream(new FileInputStream("C:\\Users\\Carlos\\Documents\\PycharmProjects\\BD\\search-engine\\java\\DataLake\\src\\main\\resources\\credentials.json"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+        this.storage = StorageOptions.newBuilder().setCredentials(credentials)
+                .setProjectId(this.projectId).build().getService();
+
+        this.bucket = storage.get(this.bucketName);
     }
 
-    public BlobId getBlobId(String word) {
-        return BlobId.of(bucketName, path + "/" + word);
+    public Storage getStorage(){
+        return this.storage;
     }
+
+    public String getBucketName(){
+        return this.bucketName;
+    }
+
+
 
 }

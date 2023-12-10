@@ -1,23 +1,19 @@
-import com.hazelcast.map.IMap;
-import datalake.Book;
+import utils.Book;
 import datalake.DataLake;
-import datalake.Reader;
+import utils.Reader;
 import impl.DataMart;
 import impl.file.FileDataMart;
-import impl.hazelcast.HazelcastDataMart;
 
-import javax.sound.midi.Receiver;
 import java.io.File;
 import java.util.List;
 
-public class HazelcastIndexer {
+public class FileSystemIndexer {
 
-    private HazelcastDataMart hazelcastDataMart;
-    private IMap<String, List<Integer>> invertedIndexMap;
+    private DataMart dataMart;
     private DataLake dataLake;
 
-    public HazelcastIndexer(DataLake dl) {
-        hazelcastDataMart = new HazelcastDataMart(invertedIndexMap);
+    public FileSystemIndexer(DataLake dl) {
+        dataMart = new FileDataMart();
         dataLake = dl;
     }
 
@@ -29,7 +25,7 @@ public class HazelcastIndexer {
         List<String> words = book.getWords();
         System.out.println("[INDEXER]: Indexing book: \"" + bookName + "\"");
         for (String word : words) {
-            hazelcastDataMart.addBookIndexToWord(word,index);
+            dataMart.addBookIndexToWord(word,index);
         }
     }
 
@@ -47,6 +43,9 @@ public class HazelcastIndexer {
         System.out.println("[INDEXER]: -------------------- Indexing ended --------------------");
     }
 
+    public void indexQueue(){
+        new Receiver();
+    }
 
 }
 
