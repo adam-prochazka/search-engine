@@ -1,9 +1,8 @@
-package datalake;
+package fsystem;
 
+import org.junit.*;
 import utils.Book;
 import utils.Reader;
-import org.junit.*;
-
 import static org.junit.Assert.*;
 import java.util.List;
 
@@ -13,7 +12,7 @@ public class ReaderTest {
     public void testReadBook() {
         DataLake datalake = new DataLake();
         Reader reader = new Reader(datalake);
-        String filePath = "datalake/src/files/(30633)Projet_de_la_constitution_française_de_1791.txt";
+        String filePath = "src/files/(30633)Projet_de_la_constitution_française_de_1791.txt";
         Book bookData = reader.readBook(filePath);
 
         assertNotNull("Book data should not be null.", bookData);

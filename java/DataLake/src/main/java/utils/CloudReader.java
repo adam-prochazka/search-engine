@@ -1,9 +1,7 @@
 package utils;
 
 import cloud.CloudDatalake;
-import com.google.auth.Credentials;
 import com.google.cloud.storage.Blob;
-import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -30,8 +28,6 @@ public class CloudReader{
     public Book readBook(Blob blob) {
         String fileName, bookName;
         List<String> words = new ArrayList<>();
-
-        //Blob blob = storage.get(bucketName, objectName);
 
         if (blob == null) {
             System.out.println("File not found in the bucket.");

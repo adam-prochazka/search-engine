@@ -1,11 +1,12 @@
-import cloud.CloudController;
+package crawler;
+
+import crawler.cloud.CloudController;
 import cloud.CloudDatalake;
-import datalake.DataLake;
-import folder.Controller;
+import fsystem.DataLake;
+import crawler.filesys.Controller;
 
 public class Main {
     public static void main(String[] args) {
-        //startCrawlerToFileSystem();
         startCrawlerToCloud();
     }
 

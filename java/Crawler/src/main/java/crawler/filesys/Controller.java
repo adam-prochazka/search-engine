@@ -1,27 +1,30 @@
-package cloud;
+package crawler.filesys;
+
+import fsystem.DataLake;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class CloudController {
+public class Controller {
 
-    private CloudDatalake cloudDatalake;
-    private CloudDownloader cloudDownloader;
+    DataLake dataLake ;
+    Downloader downloader;
 
-    public CloudController(CloudDatalake cloudDatalake) {
-        this.cloudDatalake = cloudDatalake;
-        this.cloudDownloader = new CloudDownloader(cloudDatalake);
+    public Controller(DataLake dl){
+        this.dataLake = dl;
+        this.downloader = new Downloader(dataLake);
         this.start();
     }
 
-    public void start() {
+    public void start(){
+
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 
         try {
             executor.scheduleAtFixedRate(() -> {
-                cloudDownloader.run();
-            }, 0, 30, TimeUnit.SECONDS);
+                downloader.run();
+            }, 0, 1, TimeUnit.MINUTES);
 
             Thread.currentThread().join();
         } catch (InterruptedException e) {
@@ -29,9 +32,13 @@ public class CloudController {
         } finally {
             executor.shutdown();
         }
+
     }
 
-    public CloudDatalake getCloudDatalake() {
-        return this.cloudDatalake;
+    public DataLake getDataLake(){
+        return this.dataLake;
     }
+
+
+
 }

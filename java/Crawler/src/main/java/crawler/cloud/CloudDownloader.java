@@ -1,7 +1,9 @@
-package cloud;
+package crawler.cloud;
 
-import ctrl.*;
-import folder.Downloader;
+import cloud.CloudDatalake;
+import crawler.ctrl.ContentManager;
+import crawler.ctrl.MessageSender;
+import crawler.filesys.Downloader;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.slf4j.Logger;
@@ -16,7 +18,6 @@ public class CloudDownloader {
 
     public CloudDownloader(CloudDatalake cloudDatalake) {
         this.cloudDatalake = cloudDatalake;
-        System.setProperty("log4j.configurationFile", "log4j2.properties");
     }
 
     public void run() {
@@ -54,8 +55,8 @@ public class CloudDownloader {
 
                 String bookContent = ContentManager.getBookContent(book);
 
-                MessageSender.sendMessage(fileName);
                 cloudDatalake.saveToCloud(fileName, bookContent);
+                MessageSender.sendMessage(fileName);
                 logger.info("Book saved to Google Cloud Storage: " + fileName);
                 return true;
             } else {
